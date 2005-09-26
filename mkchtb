@@ -1,0 +1,124 @@
+#!/bin/bash
+# 
+#   mkchtb
+#   creates a chroot tarball to build packages for Frugalware on other systems
+#  
+#   Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+USE_COLOR="n"
+
+# Frugalware extensions to makepkg
+[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
+
+# source Arch's abs.conf if it's present
+[ -f /etc/abs/abs.conf ] && source /etc/abs/abs.conf
+
+# makepkg configuration
+[ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
+
+CHROOTDIR="fwchroot-`date +%Y%m%d`/"
+
+### SUBROUTINES ###
+
+plain() {
+	if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+		echo -e "    \033[1;1m$1\033[1;0m" >&2
+	else
+		echo "    $1" >&2
+	fi
+}
+msg() {
+	if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+		echo -e "\033[1;32m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
+	else
+		echo "==> $1" >&2
+	fi
+}
+warning() {
+	if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+		echo -e "\033[1;33m==> WARNING:\033[1;0m \033[1;1m$1\033[1;0m" >&2
+	else
+		echo "==> WARNING: $1" >&2
+	fi
+}
+error() {
+	if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+		echo -e "\033[1;31m==> ERROR:\033[1;0m \033[1;1m$1\033[1;0m" >&2
+	else
+		echo "==> ERROR: $1" >&2
+	fi
+}
+
+chroot_umount() {
+    msg "Attempting to umount chroot directories..."
+    umount $CHROOTDIR/proc >/dev/null &
+    umount $CHROOTDIR/sys >/dev/null &
+    umount $CHROOTDIR/var/cache/pacman >/dev/null &
+    if [ "$?" != "0" ]; then
+	error "An error occurred while attempting to umount chroot directories."
+	exit 1
+    fi
+    msg "Successfully umounted chroot directories."
+}
+
+chroot_mount() {
+    msg "Attempting to mount chroot directories..."
+    mount -t proc none $CHROOTDIR/proc >/dev/null &
+    mount -t sysfs none $CHROOTDIR/sys >/dev/null &
+    mount -o bind /var/cache/pacman $CHROOTDIR/var/cache/pacman >/dev/null &
+    if [ "$?" != "0" ]; then
+	error "An error occurred while attempting to mount chroot directories."
+	exit 1
+    fi
+    msg "Successfully mounted chroot directories."
+}
+
+# Create the chroot environment.
+if [ "`id -u`" != 0 ]; then
+	error "Building the chroot as an unprivileged user is not possible."
+	exit 1
+fi
+if [ "$CHROOTDIR" = "" ]; then
+	error "The CHROOTDIR environment variable is not defined."
+	exit 1
+fi
+
+mkdir -p $CHROOTDIR/{etc,proc,sys,var/cache/pacman,var/tmp/fst}
+
+chroot_mount
+
+if [ ! -d "$CHROOTDIR/usr" ]; then
+	msg "Building chroot environment"
+	pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm
+	if [ "$?" != "0" ]; then
+		error "Failed to build chroot environment."
+		chroot_umount
+		exit 1
+	fi
+else
+	error "The chroot environment already exists."
+	chroot_umount
+	exit 1
+fi
+	
+chroot_umount
+rm $CHROOTDIR/dev/*
+cp fwbootstrap $CHROOTDIR
+tar cvjf fwchroot-`date +%Y%m%d`.tar.bz2 $CHROOTDIR
+rm -rf $CHROOTDIR

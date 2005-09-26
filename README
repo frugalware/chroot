@@ -1,0 +1,20 @@
+fwbootstrap - enter to a Frugalware chroot
+
+How to use?
+
+1) Download the tarball
+
+wget http://ftp.frugalware.org/pub/other/chroot/fwchroot-<date>-<arch>.tar.bz2
+
+2) Unpack it
+
+tar xvjf fwchroot-<date>-<arch>.tar.bz2
+
+3) Enter the chroot. The parameter is the root of the chroot.
+
+cd fwchroot-<date>-<arch>
+./fwbootstrap ./
+
+4) Use it (build a package or so)
+
+5) Exit from the shell and fwbootstrap will umount the necessary dirs for you.
