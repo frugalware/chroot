@@ -32,6 +32,7 @@ USE_COLOR="n"
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
 
 CHROOTDIR=$1
+[ -z "$CHROOTDIR" ] && CHROOTDIR=./
 
 ### SUBROUTINES ###
 
