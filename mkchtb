@@ -23,6 +23,8 @@
 
 USE_COLOR="n"
 
+[ -z "$arch" ] && arch=`uname -m`
+
 # Frugalware extensions to makepkg
 [ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
 
@@ -32,7 +34,7 @@ USE_COLOR="n"
 # makepkg configuration
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
 
-CHROOTDIR="fwchroot-`date +%Y%m%d`/"
+CHROOTDIR="fwchroot-`date +%Y%m%d`-$arch/"
 
 ### SUBROUTINES ###
 
@@ -105,7 +107,11 @@ chroot_mount
 
 if [ ! -d "$CHROOTDIR/usr" ]; then
 	msg "Building chroot environment"
-	pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm
+	if [ -e pacman.conf ]; then
+		pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm --config pacman.conf
+	else
+		pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm
+	fi
 	if [ "$?" != "0" ]; then
 		error "Failed to build chroot environment."
 		chroot_umount
@@ -120,5 +126,5 @@ fi
 chroot_umount
 rm $CHROOTDIR/dev/*
 cp fwbootstrap $CHROOTDIR
-tar cvjf fwchroot-`date +%Y%m%d`.tar.bz2 $CHROOTDIR
+tar cvjf fwchroot-`date +%Y%m%d`-$arch.tar.bz2 $CHROOTDIR
 rm -rf $CHROOTDIR
