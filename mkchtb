@@ -28,9 +28,6 @@ USE_COLOR="n"
 # Frugalware extensions to makepkg
 [ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
 
-# source Arch's abs.conf if it's present
-[ -f /etc/abs/abs.conf ] && source /etc/abs/abs.conf
-
 # makepkg configuration
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
 
