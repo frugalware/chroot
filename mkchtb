@@ -99,7 +99,7 @@ if [ "$CHROOTDIR" = "" ]; then
 	exit 1
 fi
 
-mkdir -p $CHROOTDIR/{etc,proc,sys,var/cache/pacman,var/tmp/fst,tmp}
+mkdir -p $CHROOTDIR/{etc,proc,sys,var/cache/pacman,var/tmp/fst,tmp,var/log}
 
 chroot_mount
 
