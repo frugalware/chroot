@@ -3,7 +3,7 @@
 #   mkchtb
 #   creates a chroot tarball to build packages for Frugalware on other systems
 #  
-#   Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2005, 2007 by Miklos Vajna <vmiklos@frugalware.org>
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 USE_COLOR="n"
 
 [ -z "$arch" ] && arch=`uname -m`
+[ -z "$ver" ] && ver=`date +%Y%m%d`
 
 # Frugalware extensions to makepkg
 [ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
@@ -31,7 +32,7 @@ USE_COLOR="n"
 # makepkg configuration
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
 
-CHROOTDIR="fwchroot-`date +%Y%m%d`-$arch/"
+CHROOTDIR="fwchroot-$ver-$arch/"
 
 ### SUBROUTINES ###
 
@@ -123,5 +124,5 @@ fi
 chroot_umount
 rm $CHROOTDIR/dev/*
 cp fwbootstrap $CHROOTDIR
-tar cvjf fwchroot-`date +%Y%m%d`-$arch.tar.bz2 $CHROOTDIR
+tar cvjf fwchroot-$ver-$arch.tar.bz2 $CHROOTDIR
 rm -rf $CHROOTDIR
