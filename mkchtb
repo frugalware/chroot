@@ -69,7 +69,7 @@ chroot_umount() {
     msg "Attempting to umount chroot directories..."
     umount $CHROOTDIR/proc >/dev/null &
     umount $CHROOTDIR/sys >/dev/null &
-    umount $CHROOTDIR/var/cache/pacman >/dev/null &
+    umount $CHROOTDIR/var/cache/pacman-g2 >/dev/null &
     if [ "$?" != "0" ]; then
 	error "An error occurred while attempting to umount chroot directories."
 	exit 1
@@ -81,7 +81,7 @@ chroot_mount() {
     msg "Attempting to mount chroot directories..."
     mount -t proc none $CHROOTDIR/proc >/dev/null &
     mount -t sysfs none $CHROOTDIR/sys >/dev/null &
-    mount -o bind /var/cache/pacman $CHROOTDIR/var/cache/pacman >/dev/null &
+    mount -o bind /var/cache/pacman-g2 $CHROOTDIR/var/cache/pacman-g2 >/dev/null &
     if [ "$?" != "0" ]; then
 	error "An error occurred while attempting to mount chroot directories."
 	exit 1
@@ -99,7 +99,7 @@ if [ "$CHROOTDIR" = "" ]; then
 	exit 1
 fi
 
-mkdir -p $CHROOTDIR/{etc,proc,sys,var/cache/pacman,var/tmp/fst,tmp,var/log}
+mkdir -p $CHROOTDIR/{etc,proc,sys,var/cache/pacman-g2,var/tmp/fst,tmp,var/log}
 
 chroot_mount
 
