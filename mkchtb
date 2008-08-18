@@ -23,11 +23,11 @@
 
 USE_COLOR="n"
 
-[ -z "$arch" ] && arch=`uname -m`
-[ -z "$ver" ] && ver=`date +%Y%m%d`
-
 # Frugalware extensions to makepkg
 [ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
+
+[ -z "$arch" ] && arch=`uname -m`
+[ -z "$ver" ] && ver=`(cd ~/$fst_root/$repos; git describe|sed 's/-/./g')`
 
 # makepkg configuration
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
