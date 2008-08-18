@@ -27,7 +27,7 @@ USE_COLOR="n"
 [ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg
 
 [ -z "$arch" ] && arch=`uname -m`
-[ -z "$ver" ] && ver=`(cd ~/$fst_root/$repos; git describe|sed 's/-/./g')`
+[ -z "$ver" ] && ver=`(cd $fst_root/$repos; git describe|sed 's/-/./g')`
 
 # makepkg configuration
 [ -f /etc/makepkg.conf ] && source /etc/makepkg.conf
