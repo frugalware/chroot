@@ -105,8 +105,8 @@ chroot_mount
 
 if [ ! -d "$CHROOTDIR/usr" ]; then
 	msg "Building chroot environment"
-	if [ -e pacman.conf ]; then
-		pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm --config pacman.conf
+	if [ -e pacman-g2.conf ]; then
+		pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm --config pacman-g2.conf
 	else
 		pacman -Syf $COREPKGS -r "$CHROOTDIR" --noconfirm
 	fi
